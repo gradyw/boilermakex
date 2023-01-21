@@ -1,11 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:speech_recognition/speech_recognition.dart';
+
 
 void main() {
-  runApp(const MyApp());
-}
+  runApp( MyApp());
+  // 1.
 
+
+}
+/*var _speech = stt.SpeechToText();
+abstract class SpeechScreen extends StatefulWidget{
+  @override
+  _SpeechScreenState createState() => _SpeechScreenState();
+}
+abstract class _SpeechScreenState extends State<SpeechScreen>{
+  stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _text = "Press Button to record";
+  double _confidence = 1.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
+  */
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+   MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -48,7 +69,78 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Boilermake-X: Swear Counter'),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: SizedBox(
+                    width: 100,
+                    child: Text(
+                      "Text output",
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 50,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  OutlinedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.blue),
+                      foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    onPressed: () {
+
+                    },
+                    child: const Text('Start', style: TextStyle(fontSize: 30)),
+                  ),
+                  const SizedBox(width: 5),
+                  OutlinedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.red),
+                      foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    onPressed: () {
+
+                    },
+                    child: const Text('Stop', style: TextStyle(fontSize: 30)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  /*int _counter = 0;
+  late SpeechRecognition _speech;
+  bool _isSpeechStarted = false;
+  bool _isListening = false;
+  String transcription = '';
+  String currentText = '';
+  bool _isEndOfSpeech = false;
 
   void _incrementCounter() {
     setState(() {
@@ -59,7 +151,10 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
-  }
+
+    }
+
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +205,6 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+    );*/
   }
-}
+

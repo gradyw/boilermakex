@@ -1,7 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.boilermakex">
+    package="com.example.flutter_voice">
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <queries>
+        <package android:name="com.google.android.googlequicksearchbox"/>
+    </queries>
+
    <application
-        android:label="boilermakex"
+        android:label="speech_to_text"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
