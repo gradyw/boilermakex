@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -18,7 +17,7 @@ Future<String> get _localPath async {
 
 Future<File> get _localFile async {
   final path = await _localPath;
-  return File('$path/counter.txt');
+  return File('$path/data.txt');
 }
 
 Future<File> writeData(List<int> data) async {
@@ -28,9 +27,46 @@ Future<File> writeData(List<int> data) async {
   return file.writeAsString('$data');
 }
 
-void test() async {
+Future<List<int>> readData() async {
+  try {
+    final file = await _localFile;
+
+    // Read the file
+    String contents = await file.readAsString();
+    // print(contents);
+    contents = contents.replaceAll("[", "");
+    contents = contents.replaceAll("]", "");
+    contents = contents.replaceAll(" ", "");
+    // print(contents);
+
+    List</*int*/String> list = contents.split(",");//.cast<int>();
+    // print(list[0]);
+    return list.cast<int>();
+
+  } catch (e) {
+    List<int> list = { 0 } as List<int>;
+    // If encountering an error, return 0
+    return list;
+  }
+}
+
+void writeMicStream() async {
   Stream<List<int>> stream = (await MicStream.microphone(sampleRate: 44100)) as Stream<List<int>>;
   StreamSubscription<List<int>> listener = stream.listen((samples) => writeData(samples));
+}
+
+
+void test() {
+  // Stream<List<int>> stream = (await MicStream.microphone(sampleRate: 44100)) as Stream<List<int>>;
+  // StreamSubscription<List<int>> listener = stream.listen((samples) => writeData(samples));
+
+  Stream<List<int>> stream = (readData()) as Stream<List<int>>;
+  StreamSubscription<List<int>> listener = stream.listen((samples) => print(samples[0]));
+  //
+  // List<int> list = (await readData();
+  // int x = 1;
+  // print(x);
+  // StreamSubscription<List<int>> listener = stream.listen((samples) => print(samples));
 }
 
 class MyApp extends StatelessWidget {
