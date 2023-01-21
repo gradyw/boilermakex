@@ -1,8 +1,36 @@
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mic_stream/mic_stream.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+Future<String> get _localPath async {
+  final directory = await getApplicationDocumentsDirectory();
+
+  return directory.path;
+}
+
+Future<File> get _localFile async {
+  final path = await _localPath;
+  return File('$path/counter.txt');
+}
+
+Future<File> writeData(List<int> data) async {
+  final file = await _localFile;
+
+  // Write the file
+  return file.writeAsString('$data');
+}
+
+void test() async {
+  Stream<List<int>> stream = (await MicStream.microphone(sampleRate: 44100)) as Stream<List<int>>;
+  StreamSubscription<List<int>> listener = stream.listen((samples) => writeData(samples));
 }
 
 class MyApp extends StatelessWidget {
@@ -53,6 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
+      print("hello");
+      test();
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
