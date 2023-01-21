@@ -1,6 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:record_mp3/record_mp3.dart';
+
+void startRecord(String path) {
+  //start record
+  RecordMp3.instance.start(path, (type) {
+    // record fail callback
+    print("COULDN'T RECORD");
+    return;
+  });
+}
+// }
+// //pause record
+//   RecordMp3.instance.pause();
+//
+// //resume record
+//   RecordMp3.instance.resume();
+//
+//   //complete record and export a record file
+//   RecordMp3.instance.stop();
+// }
+
+
+
 
 void main() {
+  startRecord("new.mp3");
   runApp(const MyApp());
 }
 
@@ -52,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
+      RecordMp3.instance.stop();
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed

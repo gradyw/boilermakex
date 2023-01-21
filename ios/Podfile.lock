@@ -1,15 +1,21 @@
 PODS:
   - Flutter (1.0.0)
+  - record_mp3 (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - record_mp3 (from `.symlinks/plugins/record_mp3/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  record_mp3:
+    :path: ".symlinks/plugins/record_mp3/ios"
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  record_mp3: b842d3900f65a0707e4064d9bcfac6323dea0b4f
 
 PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
 
