@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -33,13 +32,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   bool recording = false;
-  var list = ['hey, no', 'hell yea'];
-  var word = '';
-  var rand = Random();
-
-  int randum(number){
-    return number;
-  }
+  var phrase = "this is what you just said";
 
   void _resetCounter() {
     setState(() {
@@ -50,8 +43,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _incrementCounter() {
     setState(() {
       _counter++;
+      phrase = "new phrase";
     });
-    word = list[randum(rand)];
   }
 
   void _listen(){
@@ -97,9 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ElevatedButton(
               onPressed: _resetCounter,
               child: Icon(Icons.refresh)),
-          //ElevatedButton(
-          //    onPressed: _incrementCounter,
-          //    child: Icon(Icons.add)),
           ElevatedButton(
               onPressed: _listen,
               child: Icon(Icons.mic)),
@@ -122,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
             counterSection,
             buttonSection,
             const SizedBox(height: 50,),
-            Text(word, style: const TextStyle(fontSize: 80),),
+            Text(phrase, style: const TextStyle(fontSize: 50, color: Colors.white),),
           ],
         ),
       ),
