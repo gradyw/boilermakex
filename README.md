@@ -1,16 +1,9 @@
-# boilermakex
+# swear.jar
 
-Flutter project for Boilermake X
+ We have created an application version of the good old Swear Jar. A great way for the user to keep 
+ track of their swearing habits. This flutter Application created through Android Studios uses the Speech_to_text 
+ flutter plugin. This library is a great tool to convert audio recorded to text using specific speech
+ recognition ability. The target cases for this plugin are commands and short phases, however we have
+ managed to get it to record continuous spoken conversation.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+speech_to_text Plugin: https://pub.dev/packages/speech_to_text
