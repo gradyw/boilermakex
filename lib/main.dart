@@ -8,17 +8,6 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 void main() => runApp(SpeechSampleApp());
 
-int detectSwears(String input) {
-  int num = 0;
-  List<String> list = input.split("* ");
-  num = list.length - 1;
-  if (list.last.endsWith("*")) {
-    num++;
-  }
-  print("Detected $num swears - $input");
-  input = "";
-  return num;
-}
 
 class SpeechSampleApp extends StatefulWidget {
   @override
@@ -110,10 +99,21 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
     });
   }
 
-  void _incrementCounter(){
+  void _incrementCounter(int num){
     setState(() {
-      _counter = 0;
+      _counter += num;
     });
+  }
+
+  void detectSwears(String input) {
+    int num = 0;
+    List<String> list = input.split("* ");
+    num = list.length - 1;
+    if (list.last.endsWith("*")) {
+      num++;
+    }
+    print("Detected $num swears - $input");
+    _incrementCounter(num);
   }
 
   void _listen(){
