@@ -8,6 +8,18 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 void main() => runApp(SpeechSampleApp());
 
+
+int detectSwears(String input) {
+  int num = 0;
+  List<String> list = input.split("* ");
+  num = list.length - 1;
+  if (list.last.endsWith("*")) {
+    num++;
+  }
+  print("Detected $num swears - $input");
+  return num;
+}
+
 class SpeechSampleApp extends StatefulWidget {
   @override
   _SpeechSampleAppState createState() => _SpeechSampleAppState();
@@ -18,7 +30,7 @@ class SpeechSampleApp extends StatefulWidget {
 /// of the underlying platform.
 class _SpeechSampleAppState extends State<SpeechSampleApp> {
   bool _hasSpeech = false;
-  bool _logEvents = true;
+  bool _logEvents = false;
   double level = 0.0;
   double minSoundLevel = 50000;
   double maxSoundLevel = -50000;
@@ -140,6 +152,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
   void resultListener(SpeechRecognitionResult result) {
     _logEvent(
         'Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
+    if (result.finalResult) detectSwears(result.recognizedWords);
     setState(() {
       lastWords = '${result.recognizedWords} - ${result.finalResult}';
     });
