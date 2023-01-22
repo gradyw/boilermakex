@@ -135,7 +135,6 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
     setState(() {
       level = 0.0;
     });
-    startListening();
   }
 
   void cancelListening() {
@@ -152,7 +151,10 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
   void resultListener(SpeechRecognitionResult result) {
     _logEvent(
         'Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
-    if (result.finalResult) detectSwears(result.recognizedWords);
+    if (result.finalResult) {
+      detectSwears(result.recognizedWords);
+      startListening();
+    }
     setState(() {
       lastWords = '${result.recognizedWords} - ${result.finalResult}';
     });
