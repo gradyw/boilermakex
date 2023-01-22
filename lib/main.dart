@@ -40,6 +40,29 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
   String _currentLocaleId = '';
   List<LocaleName> _localeNames = [];
   final SpeechToText speech = SpeechToText();
+  bool listening = false;
+  bool start = false;
+
+  bool checkListening() {
+    if (start && speech.isListening) {
+      start = false;
+      return speech.isListening;
+    } else if (start) {
+      return speech.isListening;
+    }
+    if (listening && speech.isListening) {
+      return speech.isListening;
+    } else if (!listening && speech.isListening) {
+      // condition should not occur
+      return speech.isListening;
+    } else if (!listening && !speech.isListening) {
+      return speech.isListening;
+    } else { // listening && !speech.isListening
+      stopListening();
+      startListening();
+      return true;
+    }
+  }
 
   @override
   void initState() {
@@ -86,7 +109,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
             child: Column(
               children: <Widget>[
                 InitSpeechWidget(_hasSpeech, initSpeechState),
-                SpeechControlWidget(_hasSpeech, speech.isListening,
+                SpeechControlWidget(_hasSpeech, checkListening(),
                     startListening, stopListening, cancelListening),
                 SessionOptionsWidget(_currentLocaleId, _switchLang,
                     _localeNames, _logEvents, _switchLogging),
@@ -110,6 +133,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
   // This is called each time the users wants to start a new speech
   // recognition session
   void startListening() {
+    print("Starting");
     _logEvent('start listening');
     lastWords = '';
     lastError = '';
@@ -119,22 +143,26 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
     // on some devices.
     speech.listen(
         onResult: resultListener,
-        listenFor: Duration(seconds: 100),
-        pauseFor: Duration(seconds: 30),
+        listenFor: Duration(seconds: 25),
+        pauseFor: Duration(seconds: 15),
         partialResults: true,
         localeId: _currentLocaleId,
         onSoundLevelChange: soundLevelListener,
         cancelOnError: false,//true,
         listenMode: ListenMode.dictation);
     setState(() {});
+    listening = true;
+    start = true;
   }
 
   void stopListening() {
+    print("stopping");
     _logEvent('stop');
     speech.stop();
     setState(() {
       level = 0.0;
     });
+    listening = false;
   }
 
   void cancelListening() {
@@ -143,7 +171,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
     setState(() {
       level = 0.0;
     });
-    startListening();
+    listening = false;
   }
 
   /// This callback is invoked each time new recognition results are
@@ -151,10 +179,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
   void resultListener(SpeechRecognitionResult result) {
     _logEvent(
         'Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
-    if (result.finalResult) {
-      detectSwears(result.recognizedWords);
-      startListening();
-    }
+    detectSwears(result.recognizedWords);
     setState(() {
       lastWords = '${result.recognizedWords} - ${result.finalResult}';
     });
@@ -328,6 +353,12 @@ class SpeechControlWidget extends StatelessWidget {
   final void Function() startListening;
   final void Function() stopListening;
   final void Function() cancelListening;
+
+  void checkListening() {
+    if (!isListening) {
+      startListening();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
