@@ -8,21 +8,15 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 void main() => runApp(SpeechSampleApp());
 
-String lastInput = "";
-
-void updateInput(String input) {
-  lastInput = input;
-}
-
-int detectSwears() {
+int detectSwears(String input) {
   int num = 0;
-  List<String> list = lastInput.split("* ");
+  List<String> list = input.split("* ");
   num = list.length - 1;
   if (list.last.endsWith("*")) {
     num++;
   }
-  print("Detected $num swears - $lastInput");
-  lastInput = "";
+  print("Detected $num swears - $input");
+  input = "";
   return num;
 }
 
@@ -65,7 +59,9 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
       return speech.isListening;
     } else { // listening && !speech.isListening
       stopListening();
-      startListening();
+      if (speech.isNotListening){
+        startListening();
+      }
       return true;
     }
   }
@@ -154,7 +150,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
         partialResults: true,
         localeId: _currentLocaleId,
         onSoundLevelChange: soundLevelListener,
-        cancelOnError: false,//true,
+        cancelOnError: true,
         listenMode: ListenMode.dictation);
     setState(() {});
     listening = true;
@@ -168,7 +164,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
     setState(() {
       level = 0.0;
     });
-    detectSwears();
+    detectSwears(speech.lastRecognizedWords);
     listening = false;
   }
 
@@ -186,7 +182,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
   void resultListener(SpeechRecognitionResult result) {
     _logEvent(
         'Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
-    updateInput(result.recognizedWords);
+    // updateInput(result.recognizedWords);
     setState(() {
       lastWords = '${result.recognizedWords} - ${result.finalResult}';
     });
@@ -202,6 +198,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
   }
 
   void errorListener(SpeechRecognitionError error) {
+    print("ERROR $error");
     _logEvent(
         'Received error status: $error, listening: ${speech.isListening}');
     setState(() {
