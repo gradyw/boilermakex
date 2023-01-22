@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:path_provider/path_provider.dart';
 
+int count = 0;
+
 void main() {
   runApp(const MyApp());
 }
@@ -17,7 +19,9 @@ Future<String> get _localPath async {
 
 Future<File> get _localFile async {
   final path = await _localPath;
-  return File('$path/data.txt');
+  count++;
+  if (count > 200) count = 0;
+  return File('$path/data$count.txt');
 }
 
 Future<File> writeData(List<int> data) async {
@@ -118,7 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _incrementCounter() {
     setState(() {
       print("hello");
-      test();
+      // test();
+      writeMicStream();
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
