@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        primarySwatch: Colors.indigo,
       ),
       home: const MyHomePage(title: 'Virtual Swear Jar'),
     );
@@ -72,7 +72,13 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Container(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: BigCard(counter: _counter),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      '$_counter bad words',
+                      style: const TextStyle(color: Colors.white, fontSize: 70),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -89,60 +95,42 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           ElevatedButton(
               onPressed: _resetCounter,
-              child: Icon(Icons.refresh)),
+              child: Icon(Icons.refresh, color: Colors.white)),
           ElevatedButton(
               onPressed: _listen,
-              child: Icon(Icons.mic)),
+              child: Icon(Icons.mic, color: Colors.white)),
           ElevatedButton(
               onPressed: _stopListen,
-              child: Icon(Icons.square)),
+              child: Icon(Icons.square, color: Colors.white)),
         ],
       )
     );
 
     return Scaffold(
-      backgroundColor: Colors.indigo[900],
       appBar: AppBar(
         title: Center(child: Text(widget.title)),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            counterSection,
-            buttonSection,
-            const SizedBox(height: 50,),
-            Text(phrase, style: const TextStyle(fontSize: 50, color: Colors.white),),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.black87,
+              Colors.black87,
+            ]
+          )
         ),
-      ),
-    );
-  }
-}
-
-class BigCard extends StatelessWidget {
-  const BigCard({
-    Key? key,
-    required int counter,
-  }) : _counter = counter, super(key: key);
-
-  final int _counter;
-
-  @override
-  Widget build(BuildContext context) {
-    var theme = Theme.of(context);
-    var style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
-
-    return Card(
-      color: theme.colorScheme.primary,
-
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Text(
-          '$_counter bad words',
-          style: style,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              counterSection,
+              buttonSection,
+              const SizedBox(height: 50,),
+              Text(phrase, style: const TextStyle(fontSize: 50, color: Colors.white),),
+            ],
+          ),
         ),
       ),
     );
