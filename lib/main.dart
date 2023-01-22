@@ -18,12 +18,7 @@ class SpeechSampleApp extends StatefulWidget {
 /// of the underlying platform.
 class _SpeechSampleAppState extends State<SpeechSampleApp> {
   bool _hasSpeech = false;
-  bool _logEvents = false;
-  bool _onDevice = false;
-  final TextEditingController _pauseForController =
-  TextEditingController(text: '3');
-  final TextEditingController _listenForController =
-  TextEditingController(text: '30');
+  bool _logEvents = true;
   double level = 0.0;
   double minSoundLevel = 50000;
   double maxSoundLevel = -50000;
@@ -45,31 +40,25 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
   /// it can only be called once.
   Future<void> initSpeechState() async {
     _logEvent('Initialize');
-    try {
-      var hasSpeech = await speech.initialize(
-        onError: errorListener,
-        onStatus: statusListener,
-        debugLogging: _logEvents,
-      );
-      if (hasSpeech) {
-        // Get the list of languages installed on the supporting platform so they
-        // can be displayed in the UI for selection by the user.
-        _localeNames = await speech.locales();
+    var hasSpeech = await speech.initialize(
+      onError: errorListener,
+      onStatus: statusListener,
+      debugLogging: true,
+    );
+    if (hasSpeech) {
+      // Get the list of languages installed on the supporting platform so they
+      // can be displayed in the UI for selection by the user.
+      _localeNames = await speech.locales();
 
-        var systemLocale = await speech.systemLocale();
-        _currentLocaleId = systemLocale?.localeId ?? '';
-      }
-      if (!mounted) return;
-
-      setState(() {
-        _hasSpeech = hasSpeech;
-      });
-    } catch (e) {
-      setState(() {
-        lastError = 'Speech recognition failed: ${e.toString()}';
-        _hasSpeech = false;
-      });
+      var systemLocale = await speech.systemLocale();
+      _currentLocaleId = systemLocale?.localeId ?? '';
     }
+
+    if (!mounted) return;
+
+    setState(() {
+      _hasSpeech = hasSpeech;
+    });
   }
 
   @override
@@ -87,17 +76,8 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
                 InitSpeechWidget(_hasSpeech, initSpeechState),
                 SpeechControlWidget(_hasSpeech, speech.isListening,
                     startListening, stopListening, cancelListening),
-                SessionOptionsWidget(
-                  _currentLocaleId,
-                  _switchLang,
-                  _localeNames,
-                  _logEvents,
-                  _switchLogging,
-                  _pauseForController,
-                  _listenForController,
-                  _onDevice,
-                  _switchOnDevice,
-                ),
+                SessionOptionsWidget(_currentLocaleId, _switchLang,
+                    _localeNames, _logEvents, _switchLogging),
               ],
             ),
           ),
@@ -121,23 +101,19 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
     _logEvent('start listening');
     lastWords = '';
     lastError = '';
-    final pauseFor = int.tryParse(_pauseForController.text);
-    final listenFor = int.tryParse(_listenForController.text);
     // Note that `listenFor` is the maximum, not the minimun, on some
-    // systems recognition will be stopped before this value is reached.
+    // recognition will be stopped before this value is reached.
     // Similarly `pauseFor` is a maximum not a minimum and may be ignored
     // on some devices.
     speech.listen(
-      onResult: resultListener,
-      listenFor: Duration(seconds: listenFor ?? 30),
-      pauseFor: Duration(seconds: pauseFor ?? 3),
-      partialResults: true,
-      localeId: _currentLocaleId,
-      onSoundLevelChange: soundLevelListener,
-      cancelOnError: true,
-      listenMode: ListenMode.confirmation,
-      onDevice: _onDevice,
-    );
+        onResult: resultListener,
+        listenFor: Duration(seconds: 100),
+        pauseFor: Duration(seconds: 30),
+        partialResults: true,
+        localeId: _currentLocaleId,
+        onSoundLevelChange: soundLevelListener,
+        cancelOnError: false,//true,
+        listenMode: ListenMode.dictation);
     setState(() {});
   }
 
@@ -147,6 +123,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
     setState(() {
       level = 0.0;
     });
+    startListening();
   }
 
   void cancelListening() {
@@ -155,6 +132,7 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
     setState(() {
       level = 0.0;
     });
+    startListening();
   }
 
   /// This callback is invoked each time new recognition results are
@@ -209,12 +187,6 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
   void _switchLogging(bool? val) {
     setState(() {
       _logEvents = val ?? false;
-    });
-  }
-
-  void _switchOnDevice(bool? val) {
-    setState(() {
-      _onDevice = val ?? false;
     });
   }
 }
@@ -365,89 +337,49 @@ class SpeechControlWidget extends StatelessWidget {
 }
 
 class SessionOptionsWidget extends StatelessWidget {
-  const SessionOptionsWidget(
-      this.currentLocaleId,
-      this.switchLang,
-      this.localeNames,
-      this.logEvents,
-      this.switchLogging,
-      this.pauseForController,
-      this.listenForController,
-      this.onDevice,
-      this.switchOnDevice,
+  const SessionOptionsWidget(this.currentLocaleId, this.switchLang,
+      this.localeNames, this.logEvents, this.switchLogging,
       {Key? key})
       : super(key: key);
 
   final String currentLocaleId;
   final void Function(String?) switchLang;
   final void Function(bool?) switchLogging;
-  final void Function(bool?) switchOnDevice;
-  final TextEditingController pauseForController;
-  final TextEditingController listenForController;
   final List<LocaleName> localeNames;
   final bool logEvents;
-  final bool onDevice;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Row(
-            children: [
-              Text('Language: '),
-              DropdownButton<String>(
-                onChanged: (selectedVal) => switchLang(selectedVal),
-                value: currentLocaleId,
-                items: localeNames
-                    .map(
-                      (localeName) => DropdownMenuItem(
-                    value: localeName.localeId,
-                    child: Text(localeName.name),
-                  ),
-                )
-                    .toList(),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text('pauseFor: '),
-              Container(
-                  padding: EdgeInsets.only(left: 8),
-                  width: 80,
-                  child: TextFormField(
-                    controller: pauseForController,
-                  )),
-              Container(
-                  padding: EdgeInsets.only(left: 16),
-                  child: Text('listenFor: ')),
-              Container(
-                  padding: EdgeInsets.only(left: 8),
-                  width: 80,
-                  child: TextFormField(
-                    controller: listenForController,
-                  )),
-            ],
-          ),
-          Row(
-            children: [
-              Text('On device: '),
-              Checkbox(
-                value: onDevice,
-                onChanged: switchOnDevice,
-              ),
-              Text('Log events: '),
-              Checkbox(
-                value: logEvents,
-                onChanged: switchLogging,
-              ),
-            ],
-          ),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        Row(
+          children: [
+            Text('Language: '),
+            DropdownButton<String>(
+              onChanged: (selectedVal) => switchLang(selectedVal),
+              value: currentLocaleId,
+              items: localeNames
+                  .map(
+                    (localeName) => DropdownMenuItem(
+                  value: localeName.localeId,
+                  child: Text(localeName.name),
+                ),
+              )
+                  .toList(),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Text('Log events: '),
+            Checkbox(
+              value: logEvents,
+              onChanged: switchLogging,
+            ),
+          ],
+        )
+      ],
     );
   }
 }
