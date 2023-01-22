@@ -7,3 +7,7 @@
  managed to get it to record continuous spoken conversation.
 
 speech_to_text Plugin: https://pub.dev/packages/speech_to_text
+
+### How to Run
+
+With Flutter installed, run `flutter run -d chrome` in the `boilermakex` directory.
